@@ -90,5 +90,5 @@ No modules.
 | <a name="output_discover_role"></a> [discover\_role](#output\_discover\_role) | ARN for the resource-discovery role assumed by Stacklet AssetDB. |
 | <a name="output_execution_extra_roles"></a> [execution\_extra\_roles](#output\_execution\_extra\_roles) | ARNs for extra policy-execution roles assumed by Stacklet Execution. |
 | <a name="output_execution_role"></a> [execution\_role](#output\_execution\_role) | ARN for the default policy-execution role assumed by Stacklet Execution. |
-| <a name="output_forward_role"></a> [forward\_role](#output\_forward\_role) | ARN for the role used to forward cloud events to Stacklet. |
+| <a name="output_forward_role"></a> [forward\_role](#output\_forward\_role) | ARN for the role used to forward cloud events to Stacklet.<br/><br/>Only created when target account is different from the current one. |
 <!-- END_TF_DOCS -->

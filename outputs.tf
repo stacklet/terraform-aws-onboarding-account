@@ -4,8 +4,12 @@ output "discover_role" {
 }
 
 output "forward_role" {
-  description = "ARN for the role used to forward cloud events to Stacklet."
-  value       = aws_iam_role.discover.arn
+  description = <<EOT
+ARN for the role used to forward cloud events to Stacklet.
+
+Only created when target account is different from the current one.
+EOT
+  value       = length(aws_iam_role.forward) > 0 ? aws_iam_role.forward[0].arn : null
 }
 
 output "execution_role" {
