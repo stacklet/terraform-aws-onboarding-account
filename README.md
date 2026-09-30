@@ -21,6 +21,29 @@ module "account" {
 
 where values for the `stacklet_` prefixed variables are provided by Stacklet.
 
+### AssumeRole chaining
+
+When Stacklet reaches the account through a customer-owned access role (see
+"AWS Access Roles" in the Stacklet documentation), pass the access role ARN as
+the trusted role and set `stacklet_target_account_id` to the Stacklet account
+ID. Without it, the module forwards events to the access role's account
+instead of Stacklet.
+
+```terraform
+module "account" {
+    source = "stacklet/onboarding-account/aws"
+    version = "0.1.0"
+
+    resource_prefix = "<PREFIX>"
+    regions         = ["<REGION-1>", "<REGION-2>"]
+
+    stacklet_external_id        = "<EXTERNAL_ID>"
+    stacklet_assetdb_role_arn   = "<READ_ONLY_ACCESS_ROLE_ARN>"
+    stacklet_execution_role_arn = "<READ_ONLY_ACCESS_ROLE_ARN>"
+    stacklet_target_account_id  = "<STACKLET_ACCOUNT_ID>"
+}
+```
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -81,6 +104,7 @@ No modules.
 | <a name="input_stacklet_assetdb_role_arn"></a> [stacklet\_assetdb\_role\_arn](#input\_stacklet\_assetdb\_role\_arn) | ARN for the role used by AssetDB - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_execution_role_arn"></a> [stacklet\_execution\_role\_arn](#input\_stacklet\_execution\_role\_arn) | ARN for the role used by policies Execution - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_external_id"></a> [stacklet\_external\_id](#input\_stacklet\_external\_id) | ID of the Stacklet deployment to restrict what can assume the roles - Provided by Stacklet. | `string` | n/a | yes |
+| <a name="input_stacklet_target_account_id"></a> [stacklet\_target\_account\_id](#input\_stacklet\_target\_account\_id) | ID of the account hosting the target event bus for event forwarding - Provided by Stacklet.<br/><br/>Defaults to the account in `stacklet_assetdb_role_arn`. Set it explicitly when<br/>that ARN is a customer-owned access role used for AssumeRole chaining, since<br/>the access role's account is not the Stacklet account. | `string` | `null` | no |
 | <a name="input_stacklet_target_event_bus_name"></a> [stacklet\_target\_event\_bus\_name](#input\_stacklet\_target\_event\_bus\_name) | Target event bus for event forwarding - Provided by Stacklet. | `string` | `"default"` | no |
 
 ## Outputs
