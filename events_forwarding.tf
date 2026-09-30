@@ -1,5 +1,5 @@
 locals {
-  destination_account_id   = data.aws_arn.stacklet_assetdb_role_arn.account
+  destination_account_id   = coalesce(var.stacklet_target_account_id, data.aws_arn.stacklet_assetdb_role_arn.account)
   different_target_account = data.aws_caller_identity.current.account_id != local.destination_account_id
   event_regions            = local.different_target_account ? toset(var.regions) : toset([])
 }
