@@ -8,7 +8,7 @@ To use this module:
 ```terraform
 module "account" {
     source = "stacklet/onboarding-account/aws"
-    version = "0.1.0"
+    version = "0.2.0"
     
     resource_prefix = "<PREFIX>"
     regions         = ["<REGION-1>", "<REGION-2>"]
@@ -32,7 +32,7 @@ instead of Stacklet.
 ```terraform
 module "account" {
     source = "stacklet/onboarding-account/aws"
-    version = "0.1.0"
+    version = "0.2.0"
 
     resource_prefix = "<PREFIX>"
     regions         = ["<REGION-1>", "<REGION-2>"]
