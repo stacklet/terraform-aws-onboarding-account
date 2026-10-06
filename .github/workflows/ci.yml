@@ -72,50 +72,10 @@ jobs:
         with:
           persist-credentials: false
 
-      # The floor is read out of required_version rather than written here, so
-      # that editing the constraint moves what CI tests in the same commit.
-      # terraform-docs parses the configuration instead of matching a regex
-      # against one file, so it reports every required_version in the module,
-      # including one in a .tf.json or split across lines. The image is pinned
-      # by digest because terraform-docs publishes no immutable releases, which
-      # leaves both a tag and a release checksum able to change underneath us.
-      # This digest is terraform-docs 0.20.0, the version in .tool-versions.
-      - name: Read the declared Terraform floor
-        id: floor
-        run: |
-          constraints=$(docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/wd" -w /wd \
-            quay.io/terraform-docs/terraform-docs@sha256:37329e2dc2518e7f719a986a3954b10771c3fe000f50f83fd4d98d489df2eae2 \
-            json . --output-file '' 2>/dev/null \
-            | jq -r '.requirements[] | select(.name == "terraform") | .version')
-          if [ -z "$constraints" ]; then
-            echo "this module declares no required_version" >&2
-            exit 1
-          fi
-          # Terraform applies every required_version in the module at once, so
-          # the effective floor is the highest lower bound among them. Only >=
-          # and ~> state that bound literally. Resolving anything else needs the
-          # release list, so reject it rather than guess at it.
-          floor=$(printf '%s\n' "$constraints" \
-            | grep -oE '(>=|~>)[[:space:]]*[0-9]+\.[0-9]+(\.[0-9]+)?' \
-            | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' \
-            | awk -F. 'NF==2 {print $0".0"; next} {print}' \
-            | sort -V | tail -1) || true
-          if [ -z "$floor" ]; then
-            echo "required_version must state a lower bound with >= or ~>; found:" >&2
-            printf '  %s\n' "$constraints" >&2
-            exit 1
-          fi
-          echo "version=$floor" >> "$GITHUB_OUTPUT"
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
-        with:
-          terraform_version: ${{ steps.floor.outputs.version }}
-
-      # The lint job validates at the pinned .tool-versions release. This run
-      # validates at the declared floor, so that whenever the two differ the
-      # bottom of the constraint is covered too.
-      - name: Validate at the declared floor
-        run: |
-          terraform init -backend=false
-          terraform validate
+      # The lint job validates at the release pinned in .tool-versions. This
+      # validates at the floor declared in required_version, so that whenever
+      # the two differ the bottom of the supported range is covered too. The
+      # action reads the floor back out of the constraint, so editing the
+      # constraint moves what CI tests in the same commit.
+      - name: Validate at the declared Terraform floor
+        uses: stacklet/github-tooling/validate-min-terraform@904e90a978529d3f81edc397d81eea4f5b54dd30
