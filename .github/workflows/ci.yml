@@ -37,6 +37,11 @@ jobs:
           tflint_version: ${{ env.TFLINT_TOOL_VERSION }}
 
       - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
+        with:
+          # Without a pin this installs whatever prek released most recently,
+          # so a hostile release reaches CI with no change here. The version
+          # comes from .tool-versions, so CI and a local run agree on it.
+          prek-version: ${{ env.PREK_TOOL_VERSION }}
         env:
           # zizmor's five online audits skip silently without a token, and its
           # summary line reads the same either way, so CI would look green with

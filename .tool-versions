@@ -1,4 +1,5 @@
 just 1.40.0
+prek 0.5.5
 terraform 1.16.4
 terraform-docs 0.20.0
 tflint v0.61.0
