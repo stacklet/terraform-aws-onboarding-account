@@ -44,8 +44,8 @@ jobs:
           prek-version: ${{ env.PREK_TOOL_VERSION }}
         env:
           # zizmor's five online audits skip silently without a token, and its
-          # summary line reads the same either way, so CI would look green with
-          # the supply-chain audits never having run.
+          # summary line reads the same either way, so CI would pass while the
+          # supply-chain audits never ran.
           GH_TOKEN: ${{ github.token }}
 
   lint-docs:
@@ -63,7 +63,7 @@ jobs:
         with:
           # Without this the action ignores .terraform-docs.yml and runs its own
           # defaults, so CI would check the docs against a different
-          # configuration than `just docs` generates them with.
+          # configuration than `just docs` uses.
           config-file: .terraform-docs.yml
           fail-on-diff: true
 
@@ -83,4 +83,4 @@ jobs:
       # action reads the floor back out of the constraint, so editing the
       # constraint moves what CI tests in the same commit.
       - name: Validate at the declared Terraform floor
-        uses: stacklet/github-tooling/validate-min-terraform@904e90a978529d3f81edc397d81eea4f5b54dd30
+        uses: stacklet/github-tooling/validate-min-terraform@c9cef9bf2460b6faf752da72f763656ea491a368
