@@ -6,5 +6,6 @@ terraform {
     }
   }
 
-  required_version = ">= 1"
+  # Require a Terraform version that has had recent updates.
+  required_version = ">= 1.14.0"
 }
