@@ -83,4 +83,4 @@ jobs:
       # action reads the floor back out of the constraint, so editing the
       # constraint moves what CI tests in the same commit.
       - name: Validate at the declared Terraform floor
-        uses: stacklet/github-tooling/validate-min-terraform@c9cef9bf2460b6faf752da72f763656ea491a368
+        uses: stacklet/github-tooling/validate-min-terraform@3865043f45564294b8e447f9e8ea03a57ccca51d
