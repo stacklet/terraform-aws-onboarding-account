@@ -26,8 +26,9 @@ where values for the `stacklet_` prefixed variables are provided by Stacklet.
 When Stacklet reaches the account through a customer-owned access role (see
 "AWS Access Roles" in the Stacklet documentation), pass the access role ARN as
 the trusted role and set `stacklet_target_account_id` to the Stacklet account
-ID. Without it, the module forwards events to the access role's account
-instead of Stacklet.
+ID. Without it, the module sends events to the account of the access role
+instead of Stacklet. If the access role is in the account being onboarded, the
+module creates no event forwarding at all.
 
 ```terraform
 module "account" {
