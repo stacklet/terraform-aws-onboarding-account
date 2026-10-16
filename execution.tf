@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "execution_assume" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "AWS"
-      identifiers = [var.stacklet_execution_role_arn]
+      identifiers = compact([var.stacklet_execution_role_arn, var.stacklet_remediation_role_arn])
     }
     condition {
       test     = "StringEquals"

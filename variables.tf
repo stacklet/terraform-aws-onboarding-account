@@ -8,6 +8,28 @@ variable "stacklet_execution_role_arn" {
   type        = string
 }
 
+variable "stacklet_remediation_role_arn" {
+  description = <<-EOT
+ARN for an additional role allowed to assume the policy execution roles.
+
+Only used with AssumeRole chaining, to allow remediation. Set it to the remediation
+access role, which Stacklet goes through for policies that have actions. Leave it
+unset to allow only read only policies.
+EOT
+  type        = string
+  default     = null
+}
+
+variable "stacklet_account_id" {
+  description = "ID of the Stacklet account, which receives forwarded events - Provided by Stacklet."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.stacklet_account_id))
+    error_message = "Stacklet account ID must be a 12-digit AWS account ID."
+  }
+}
+
 variable "stacklet_target_event_bus_name" {
   description = "Target event bus for event forwarding - Provided by Stacklet."
   type        = string
