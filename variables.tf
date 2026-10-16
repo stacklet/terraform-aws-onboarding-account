@@ -12,9 +12,9 @@ variable "stacklet_remediation_role_arn" {
   description = <<-EOT
 ARN for an additional role allowed to assume the policy execution roles.
 
-Only needed with AssumeRole chaining. Set it to the remediation access role, which
-Stacklet goes through for policies that have actions, and set
-`stacklet_execution_role_arn` to the read only access role.
+Only used with AssumeRole chaining, to allow remediation. Set it to the remediation
+access role, which Stacklet goes through for policies that have actions. Leave it
+unset to allow only read only policies.
 EOT
   type        = string
   default     = null

@@ -30,9 +30,9 @@ place of the Stacklet role ARNs:
 
 - `stacklet_assetdb_role_arn` and `stacklet_execution_role_arn` take the read
   only access role.
-- `stacklet_remediation_role_arn` takes the remediation access role. Stacklet
-  goes through it for policies that have actions, so without it those policies
-  cannot assume the execution roles.
+- `stacklet_remediation_role_arn` optionally takes the remediation access role.
+  Stacklet goes through it for policies that have actions. Leave it unset to
+  allow only read only policies.
 
 `stacklet_account_id` stays the Stacklet account ID.
 
@@ -112,7 +112,7 @@ No modules.
 | <a name="input_stacklet_assetdb_role_arn"></a> [stacklet\_assetdb\_role\_arn](#input\_stacklet\_assetdb\_role\_arn) | ARN for the role used by AssetDB - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_execution_role_arn"></a> [stacklet\_execution\_role\_arn](#input\_stacklet\_execution\_role\_arn) | ARN for the role used by policies Execution - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_external_id"></a> [stacklet\_external\_id](#input\_stacklet\_external\_id) | ID of the Stacklet deployment to restrict what can assume the roles - Provided by Stacklet. | `string` | n/a | yes |
-| <a name="input_stacklet_remediation_role_arn"></a> [stacklet\_remediation\_role\_arn](#input\_stacklet\_remediation\_role\_arn) | ARN for an additional role allowed to assume the policy execution roles.<br/><br/>Only needed with AssumeRole chaining. Set it to the remediation access role, which<br/>Stacklet goes through for policies that have actions, and set<br/>`stacklet_execution_role_arn` to the read only access role. | `string` | `null` | no |
+| <a name="input_stacklet_remediation_role_arn"></a> [stacklet\_remediation\_role\_arn](#input\_stacklet\_remediation\_role\_arn) | ARN for an additional role allowed to assume the policy execution roles.<br/><br/>Only used with AssumeRole chaining, to allow remediation. Set it to the remediation<br/>access role, which Stacklet goes through for policies that have actions. Leave it<br/>unset to allow only read only policies. | `string` | `null` | no |
 | <a name="input_stacklet_target_event_bus_name"></a> [stacklet\_target\_event\_bus\_name](#input\_stacklet\_target\_event\_bus\_name) | Target event bus for event forwarding - Provided by Stacklet. | `string` | `"default"` | no |
 
 ## Outputs
