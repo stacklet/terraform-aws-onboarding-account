@@ -1,6 +1,5 @@
 locals {
-  destination_account_id   = coalesce(var.stacklet_target_account_id, data.aws_arn.stacklet_assetdb_role_arn.account)
-  different_target_account = data.aws_caller_identity.current.account_id != local.destination_account_id
+  different_target_account = data.aws_caller_identity.current.account_id != var.stacklet_account_id
   event_regions            = local.different_target_account ? toset(var.regions) : toset([])
 }
 
@@ -66,7 +65,7 @@ resource "aws_cloudwatch_event_target" "forward" {
     data.aws_partition.current.partition,
     "events",
     each.key,
-    local.destination_account_id,
+    var.stacklet_account_id,
     "event-bus/${var.stacklet_target_event_bus_name}"
   )
   role_arn = aws_iam_role.forward[0].arn
@@ -121,7 +120,7 @@ data "aws_iam_policy_document" "forward" {
         data.aws_partition.current.partition,
         "events",
         each.key,
-        local.destination_account_id,
+        var.stacklet_account_id,
         "event-bus/${var.stacklet_target_event_bus_name}"
       )
     ]

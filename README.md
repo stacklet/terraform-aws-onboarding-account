@@ -16,6 +16,7 @@ module "account" {
     stacklet_external_id        = "<EXTERNAL_ID>"
     stacklet_assetdb_role_arn   = "<ASSETDB_ROLE_ARN>"
     stacklet_execution_role_arn = "<EXECUTION_ROLE_ARN>"
+    stacklet_account_id         = "<STACKLET_ACCOUNT_ID>"
 }
 ```
 
@@ -23,12 +24,17 @@ where values for the `stacklet_` prefixed variables are provided by Stacklet.
 
 ### AssumeRole chaining
 
-When Stacklet reaches the account through a customer-owned access role (see
-"AWS Access Roles" in the Stacklet documentation), pass the access role ARN as
-the trusted role and set `stacklet_target_account_id` to the Stacklet account
-ID. Without it, the module sends events to the account of the access role
-instead of Stacklet. If the access role is in the account being onboarded, the
-module creates no event forwarding at all.
+When Stacklet reaches the account through customer-owned access roles (see
+"AWS Access Roles" in the Stacklet documentation), pass the access role ARNs in
+place of the Stacklet role ARNs:
+
+- `stacklet_assetdb_role_arn` and `stacklet_execution_role_arn` take the read
+  only access role.
+- `stacklet_remediation_role_arn` takes the remediation access role. Stacklet
+  goes through it for policies that have actions, so without it those policies
+  cannot assume the execution roles.
+
+`stacklet_account_id` stays the Stacklet account ID.
 
 ```terraform
 module "account" {
@@ -38,10 +44,11 @@ module "account" {
     resource_prefix = "<PREFIX>"
     regions         = ["<REGION-1>", "<REGION-2>"]
 
-    stacklet_external_id        = "<EXTERNAL_ID>"
-    stacklet_assetdb_role_arn   = "<READ_ONLY_ACCESS_ROLE_ARN>"
-    stacklet_execution_role_arn = "<READ_ONLY_ACCESS_ROLE_ARN>"
-    stacklet_target_account_id  = "<STACKLET_ACCOUNT_ID>"
+    stacklet_external_id          = "<EXTERNAL_ID>"
+    stacklet_assetdb_role_arn     = "<READ_ONLY_ACCESS_ROLE_ARN>"
+    stacklet_execution_role_arn   = "<READ_ONLY_ACCESS_ROLE_ARN>"
+    stacklet_remediation_role_arn = "<REMEDIATION_ACCESS_ROLE_ARN>"
+    stacklet_account_id           = "<STACKLET_ACCOUNT_ID>"
 }
 ```
 
@@ -83,7 +90,6 @@ No modules.
 | [aws_iam_role_policy_attachments_exclusive.discover](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachments_exclusive) | resource |
 | [aws_iam_role_policy_attachments_exclusive.execution](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachments_exclusive) | resource |
 | [aws_iam_role_policy_attachments_exclusive.execution_extra](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachments_exclusive) | resource |
-| [aws_arn.stacklet_assetdb_role_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/arn) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy.readonly_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |
 | [aws_iam_policy_document.describe_augments](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -102,10 +108,11 @@ No modules.
 | <a name="input_iam_path"></a> [iam\_path](#input\_iam\_path) | A path for created IAM roles. If set, it must include leading and trailing slashes. | `string` | `"/"` | no |
 | <a name="input_regions"></a> [regions](#input\_regions) | Regions in which resources should be created. | `list(string)` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | An arbitrary prefix prepended to names of created resources. | `string` | n/a | yes |
+| <a name="input_stacklet_account_id"></a> [stacklet\_account\_id](#input\_stacklet\_account\_id) | ID of the Stacklet account, which receives forwarded events - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_assetdb_role_arn"></a> [stacklet\_assetdb\_role\_arn](#input\_stacklet\_assetdb\_role\_arn) | ARN for the role used by AssetDB - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_execution_role_arn"></a> [stacklet\_execution\_role\_arn](#input\_stacklet\_execution\_role\_arn) | ARN for the role used by policies Execution - Provided by Stacklet. | `string` | n/a | yes |
 | <a name="input_stacklet_external_id"></a> [stacklet\_external\_id](#input\_stacklet\_external\_id) | ID of the Stacklet deployment to restrict what can assume the roles - Provided by Stacklet. | `string` | n/a | yes |
-| <a name="input_stacklet_target_account_id"></a> [stacklet\_target\_account\_id](#input\_stacklet\_target\_account\_id) | ID of the account hosting the target event bus for event forwarding - Provided by Stacklet.<br/><br/>Defaults to the account in `stacklet_assetdb_role_arn`. Set it explicitly when<br/>that ARN is a customer-owned access role used for AssumeRole chaining, since<br/>the access role's account is not the Stacklet account. | `string` | `null` | no |
+| <a name="input_stacklet_remediation_role_arn"></a> [stacklet\_remediation\_role\_arn](#input\_stacklet\_remediation\_role\_arn) | ARN for an additional role allowed to assume the policy execution roles.<br/><br/>Only needed with AssumeRole chaining. Set it to the remediation access role, which<br/>Stacklet goes through for policies that have actions, and set<br/>`stacklet_execution_role_arn` to the read only access role. | `string` | `null` | no |
 | <a name="input_stacklet_target_event_bus_name"></a> [stacklet\_target\_event\_bus\_name](#input\_stacklet\_target\_event\_bus\_name) | Target event bus for event forwarding - Provided by Stacklet. | `string` | `"default"` | no |
 
 ## Outputs

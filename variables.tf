@@ -8,20 +8,25 @@ variable "stacklet_execution_role_arn" {
   type        = string
 }
 
-variable "stacklet_target_account_id" {
+variable "stacklet_remediation_role_arn" {
   description = <<-EOT
-ID of the account hosting the target event bus for event forwarding - Provided by Stacklet.
+ARN for an additional role allowed to assume the policy execution roles.
 
-Defaults to the account in `stacklet_assetdb_role_arn`. Set it explicitly when
-that ARN is a customer-owned access role used for AssumeRole chaining, since
-the access role's account is not the Stacklet account.
+Only needed with AssumeRole chaining. Set it to the remediation access role, which
+Stacklet goes through for policies that have actions, and set
+`stacklet_execution_role_arn` to the read only access role.
 EOT
   type        = string
   default     = null
+}
+
+variable "stacklet_account_id" {
+  description = "ID of the Stacklet account, which receives forwarded events - Provided by Stacklet."
+  type        = string
 
   validation {
-    condition     = var.stacklet_target_account_id == null || can(regex("^[0-9]{12}$", var.stacklet_target_account_id))
-    error_message = "Target account ID must be a 12-digit AWS account ID."
+    condition     = can(regex("^[0-9]{12}$", var.stacklet_account_id))
+    error_message = "Stacklet account ID must be a 12-digit AWS account ID."
   }
 }
 
