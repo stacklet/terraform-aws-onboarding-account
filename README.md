@@ -53,6 +53,27 @@ module "account" {
 ```
 
 
+## Versioning
+
+This module is published to the [Terraform Registry](https://registry.terraform.io/modules/stacklet/onboarding-account/aws).
+Set `source` to the registry address and pin `version` to a release.
+
+`version` takes the usual constraint syntax. This module is pre-1.0, and on a
+0.x line a minor release is where it ships breaking changes, so pin at the
+patch level: `~> 0.2.0` accepts `0.2.1` and later patches and holds at `0.3.0`.
+Read the release notes before moving to a new minor.
+
+## Migrating to 0.2.0
+
+0.2.0 requires `stacklet_account_id`, the account that receives forwarded
+events. 0.1.x worked it out from `stacklet_assetdb_role_arn` instead. Stacklet
+provides the value, and a plan fails until the input is set. The break lands in
+a minor because this module is pre-1.0.
+
+`stacklet_remediation_role_arn` is new and optional. Set it to the remediation
+access role to let Stacklet run policies with actions through AssumeRole
+chaining. Leaving it unset keeps the execution roles read only.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
