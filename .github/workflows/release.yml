@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Which part of the version to raise.
+        required: true
+        type: choice
+        options:
+          - (choose one)
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: Work out the next version and stop without publishing
+        required: false
+        type: boolean
+        default: false
+
+# Two runs would otherwise claim the same version. The second fails safely at
+# the release step, but serialising stops it happening at all.
+#
+# This belongs to the dispatched workflow rather than the called one, so every
+# caller carries it. Copy this file rather than writing one.
+concurrency: release
+
+permissions: {}
+
+jobs:
+  release:
+    uses: stacklet/github-tooling/.github/workflows/cut-release.yml@d5b3816baeac0706507e2119240fe0b793e1a1d3 # main
+    # The ceiling for the called workflow, not what each job gets. It narrows
+    # this to read for the job running the third-party action, and only its
+    # publish job keeps write.
+    permissions:
+      contents: write
+    secrets:
+      STEP_SECURITY_API_KEY: ${{ secrets.STEP_SECURITY_API_KEY }}
+    with:
+      bump: ${{ inputs.bump }}
+      dry_run: ${{ inputs.dry_run }}
